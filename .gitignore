@@ -1,0 +1,9 @@
+# VS cache
+**/.vs/
+
+# NuGet packages
+packages/
+
+# Build results
+**/bin/
+**/obj/
