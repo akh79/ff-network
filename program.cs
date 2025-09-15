@@ -60,7 +60,7 @@ namespace ff_neural_net
         {
             if (args.Length < 3)
             {
-                Console.WriteLine($"There must be 3 input parameters on the command line. Given {args.Length}");
+                Console.WriteLine($"There must be at least 3 input parameters on the command line. Given {args.Length}");
                 return;
             }
 
@@ -89,6 +89,16 @@ namespace ff_neural_net
                 return;
             }
 
+            if (args.Length > 3 && !int.TryParse(args[3], out int batchSize))
+            {
+                Console.WriteLine("Batch size isn't a valid integer. Terminating...");
+                return;
+            }
+            else
+            {
+                batchSize = 64;
+            }
+
             string trainImageFilePath = basePath + "train-images.idx3-ubyte";
             string trainLabelFilePath = basePath + "train-labels.idx1-ubyte";
 
@@ -104,7 +114,7 @@ namespace ff_neural_net
             net.Add(new ActivationLayer(10, 10));
 
             // Train
-            net.Fit(trainData.images, trainLabels, minibatches, learningRate);
+            net.Fit(trainData.images, trainLabels, minibatches, learningRate, batchSize);
 
             string testImageFilePath = basePath + "t10k-images.idx3-ubyte";
             string testLabelFilePath = basePath + "t10k-labels.idx1-ubyte";

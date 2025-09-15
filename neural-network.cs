@@ -89,9 +89,8 @@ namespace ff_neural_net
         internal float[] mDeltaBiases;
         internal float[] mTempProd;
         internal int mPasses;
-        internal bool mLoadParamsFromFile = false;
-        private static int index = 0;
 
+        // This function loads weights and biases from a binary file
         internal void LoadParametersFromBinary(float[][] mat, float[] vec, string filePath)
         {
             using (var reader = new BinaryReader(File.Open(filePath, FileMode.Open)))
@@ -119,7 +118,7 @@ namespace ff_neural_net
             }
         }
 
-        internal FullyConnectedLayer(int inputSize, int outputSize)
+        internal FullyConnectedLayer(int inputSize, int outputSize, string baseDataPath = "")
             : base(inputSize, outputSize)
         {
             mWeights = new float[inputSize][];
@@ -128,16 +127,14 @@ namespace ff_neural_net
                 mWeights[i] = new float[mOutputSize];
                 for (int j = 0; j < mOutputSize; ++j)
                 {
-                    if (!mLoadParamsFromFile)
-                        mWeights[i][j] = (float)(rnd.NextDouble() - 0.5f);
+                    mWeights[i][j] = (float)(rnd.NextDouble() - 0.5f);
                 }
             }
 
             mBiases = new float[mOutputSize];
             for (int i = 0; i < mOutputSize; ++i)
             {
-                if (!mLoadParamsFromFile)
-                    mBiases[i] = (float)(rnd.NextDouble() * 0.1); 
+                mBiases[i] = (float)(rnd.NextDouble() * 0.1); 
             }
 
             mDeltaWeights = new float[mInputSize][];
@@ -150,12 +147,6 @@ namespace ff_neural_net
             mTempProd = new float[mOutputSize];
 
             mPasses = 0;
-
-            if (mLoadParamsFromFile)
-            {
-                string pName = String.Format("C:/Users/akhru/Data/ff-neural-net-mathnet/params{0}.bin", index++);
-                LoadParametersFromBinary(mWeights, mBiases, pName);
-            }
         }
 
         internal override float[] Forward(float[] inputData)
@@ -296,7 +287,7 @@ namespace ff_neural_net
         // yTrain matrix contains one-hot-encoded labels, its dimensions (numberOfLabels, 10)
         // numberOfImages == numberOfLabels == 60000
 
-        public void Fit(float[][] xTrain, float[][] yTrain, int minibatches, float rate, int batchSize = 64)
+        public void Fit(float[][] xTrain, float[][] yTrain, int minibatches, float rate, int batchSize)
         {
             Random rand = new Random();
 
